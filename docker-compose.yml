@@ -36,7 +36,7 @@ services:
     expose:
       - "8081"
     volumes:
-      - /Users/kbs/git/peladonerd/varios/1/www:/usr/share/nginx/html:ro
+      - /sandbox/hornet/nginx:/usr/share/nginx/html
       - ./config.json:/app/config.json:ro
       - ./config_comnet.json:/app/config_comnet.json:ro
       - ./config_devnet.json:/app/config_devnet.json:ro
