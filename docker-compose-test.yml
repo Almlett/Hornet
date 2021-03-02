@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    restart: always
+    ports:
+      - "80:8081"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - certs:/etc/nginx/certs:ro
+      - vhostd:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+    labels:
+      - com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    restart: always
+    environment:
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+    volumes:
+      - certs:/etc/nginx/certs:rw
+      - vhostd:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  www:
+    image: hornet:latest
+    restart: always
+    build:
+      context: .
+      # For aarch64/arm64 use Dockerfile.arm64
+      dockerfile: docker/Dockerfile
+    expose:
+      - "8081"
+    volumes:
+      - /sandbox/hornet/nginx:/usr/share/nginx/html
+      - ./config.json:/app/config.json:ro
+      - ./config_comnet.json:/app/config_comnet.json:ro
+      - ./config_devnet.json:/app/config_devnet.json:ro
+      - ./mqtt_config.json:/app/mqtt_config.json
+      - ./profiles.json:/app/profiles.json
+      - ./peering.json:/app/peering.json
+      - ./snapshots/mainnet:/app/snapshots/mainnet
+      - ./snapshots/comnet:/app/snapshots/comnet
+      - ./mainnetdb:/app/mainnetdb
+      - ./comnetdb:/app/comnetdb
+    environment:
+      - VIRTUAL_HOST=michelandrade.ninja,www.michelandrade.ninja
+      - LETSENCRYPT_HOST=michelandrade.ninja,www.michelandrade.ninja
+      - LETSENCRYPT_EMAIL=alan@michelandrade.ninja
+    depends_on:
+      - nginx-proxy
+      - letsencrypt
+volumes: 
+  certs:
+  html:
+  vhostd:
