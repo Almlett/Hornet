@@ -1,5 +1,5 @@
 #!/bin/bash
-chown 39999:39999 mainnetdb
-chown 39999:39999 snapshots/mainnet
-chown 39999:39999 snapshots/devnet
-chown 39999:39999 snapshots/comnet
+sudo chown 39999:39999 mainnetdb
+sudo chown 39999:39999 snapshots/mainnet
+sudo chown 39999:39999 snapshots/devnet
+sudo chown 39999:39999 snapshots/comnet
